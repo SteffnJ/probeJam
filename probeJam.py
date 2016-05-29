@@ -34,8 +34,8 @@ def argumentTreater():
     parser = argparse.ArgumentParser(description = "Jam and sniff"\
         + " some targets")
 
-    parser.add_argument("-i",
-                        "--interface",
+    # Providing the interface is not optional!
+    parser.add_argument("interface",
                          help = "target interface, in monitoring mode"\
                             + "\n\nExample: ")
     args = parser.parse_args()
