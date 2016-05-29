@@ -50,7 +50,8 @@ def argumentGenerator():
                         "--verbose", action = "store_true",
                         help = "turn on verbosity")
 
-    # Other options?
+    # Other option
+    # Jam mode
 
     # Returns all the arguments
     return parser.parse_args()
@@ -64,34 +65,30 @@ def argumentTreat(args):
     if (args.verbose):
         printVerboseDetails()
     if (args.logfile):
-        global logfile
-        logfile = args.logfile
+        # Please be careful about the log file as you are
+        # running this as root and may write over important
+        # files/folders.
+        global logFile
+        logFile = args.logfile
+
+    # Regardless of previous options, we want to sniff
+    # TODO - make an option for jamming
+    probeSniff(iface)
 
 
-
-
-
-def main():
-    args = argumentGenerator()
-    argumentTreat(args)
-
-
-
-    # Iterate over all args and define variables/options
-'''
-    if (verbose):
-        printVerboseDetails()
-    print W+"probeJam"
-    global requests
-    requests = []
-    sniffed = sniff(iface=interface, prn = myFuckingsFilter)
-    '''
-
+# Basically just a start-up menu
 def printVerboseDetails():
     print W + "probeJam.py"
     print "Version: %s" % VERSION
     print "Created by SteffnJ"
     print "Thanks for using probeJam."
+
+
+def probeSniff(iface):
+    global requests
+    requests = []
+    sniffed = sniff(iface=iface, prn = myFuckingsFilter)
+
 
 # Ugly regex that can be cleaned up
 def myFuckingsFilter(packet):
@@ -125,7 +122,7 @@ def myFuckingsFilter(packet):
             print O+packetString
         
 
-# Write the log to a file
+# Write the log to a file when you kill the program
 def kill(signal, frame):
     if ('logFile' in globals()):
         print R+"\nWriting to file"
@@ -133,9 +130,14 @@ def kill(signal, frame):
         for line in requests:
             f.write(line + "\n")
         f.close()
-    print R+"\nExiting"
+    print R+"Exiting"
     exit(1)
 
+
+# Start main and treat the program flow based on args
+def main():
+    args = argumentGenerator()
+    argumentTreat(args)
 
 
 if (__name__ == "__main__"):
@@ -143,22 +145,3 @@ if (__name__ == "__main__"):
     signal(SIGINT, kill)
     # Run the main program
     main()
-'''
-
-    #parser = argparse.ArgumentParser(description=
-    #Sniffing and logging probe requests and responses
-    #        
-    #processArguments(parser)
-    
-    if (len(argv) < 2):
-        print "Usage: probeRequestLogger.py -i iface [logFile]"
-        exit(1)
-    if (len(argv) == 3):
-        # Provided logFile
-        # You are pretty fucking stupid if you give a silly file
-        # Remember, you are running as fucking root.......
-        global logFile
-        logFile = argv[2]
-    iface = argv[1]
-    main(iface)
-    '''
