@@ -84,6 +84,11 @@ def printVerboseDetails():
     print "Thanks for using probeJam."
 
 
+# The jammer part
+def jam(iface, targetMac, apMac):
+    
+
+# The sniffer part
 def probeSniff(iface):
     global requests
     requests = []
