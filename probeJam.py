@@ -40,18 +40,40 @@ def argumentGenerator():
                         type = str,
                         help = "target interface, in monitoring mode."\
                             + " Example: probeJam.py wlan0mon")
-    # Log file
-    parser.add_argument("-l",
-                        "--logfile",
-                        type = str,
-                        help = "log to LOGFILE. Example: -i log.txt")
+
     # Verbose option
     parser.add_argument("-v",
                         "--verbose", action = "store_true",
                         help = "turn on verbosity")
 
-    # Other option
+    # Log file
+    parser.add_argument("-l",
+                        "--logfile",
+                        type = str,
+                        help = "log to LOGFILE. Example: -i log.txt")
+
     # Jam mode
+    parser.add_argument("-j",
+                        "--jam",
+                        action = "store_true",
+                        help = "jam user from accesspoint."\
+                            + " Requires -t and -a.")
+
+    # These are required if -j flag is set
+    parser.add_argument("-t",
+                        "--target",
+                        help = "target's MAC address - needed for -j."\
+                            + " Example: -a 66:75:63:6b:20:75")
+
+    parser.add_argument("-a",
+                        "--accesspoint",
+                        help = "access point of target -"\
+                            + " needed for -j. Example: -a"\
+                            + " 62:61:6c:6c:7a:7a")
+
+    # Other options?
+    
+
 
     # Returns all the arguments
     return parser.parse_args()
@@ -71,6 +93,17 @@ def argumentTreat(args):
         global logFile
         logFile = args.logfile
 
+    # Make sure it also has the additional target mac and ap mac
+    if (args.jam):
+        if (args.target and args.accesspoint):
+            target = args.target
+            accesspoint = args.accesspoint
+        else:
+            print R+"Not supplied accesspoint/target MAC address"
+            print "Exiting..."
+            exit(0)
+
+
     # Regardless of previous options, we want to sniff
     # TODO - make an option for jamming
     probeSniff(iface)
@@ -85,14 +118,17 @@ def printVerboseDetails():
 
 
 # The jammer part
+# Takes in the interface, targetMac and apMac
 def jam(iface, targetMac, apMac):
-    
+    print "Jam"
+
+
 
 # The sniffer part
 def probeSniff(iface):
     global requests
     requests = []
-    sniffed = sniff(iface=iface, prn = myFuckingsFilter)
+    sniffed = sniff(iface = iface, prn = myFuckingsFilter)
 
 
 # Ugly regex that can be cleaned up
@@ -103,7 +139,8 @@ def myFuckingsFilter(packet):
         ssid = re.sub("' /.*", "", ssid)
         tmpString = re.sub("^.*Management 4L ", "", tmpString)
         tmpString = re.sub(" / Dot11ProbeReq.*", "", tmpString)
-        tmpString = re.sub(" > ff:ff:ff:ff:ff.*", "", tmpString)
+        tmpString = re.sub(" > [0-9A-Za-z]{2}.*",
+            "", tmpString)
         packetString = "Probe request:\t"
         packetString += tmpString
         packetString += "\t\t\t\tSSID: "
@@ -135,7 +172,7 @@ def kill(signal, frame):
         for line in requests:
             f.write(line + "\n")
         f.close()
-    print R+"Exiting"
+    print R+"Exiting..."
     exit(1)
 
 
