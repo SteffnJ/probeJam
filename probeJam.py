@@ -29,24 +29,54 @@ C  = '\033[36m' # cyan
 GR = '\033[37m' # gray
 T  = '\033[93m' # tan
 
-def argumentTreater():
+# Create an argument parser
+def argumentGenerator():
     # Create the parser object
     parser = argparse.ArgumentParser(description = "Jam and sniff"\
         + " some targets")
 
     # Providing the interface is not optional!
     parser.add_argument("interface",
-                        type=str,
+                        type = str,
                         help = "target interface, in monitoring mode."\
-                            + "\n\nExample: probeJam.py wlan0mon")
-    args = parser.parse_args()
+                            + " Example: probeJam.py wlan0mon")
+    # Log file
+    parser.add_argument("-l",
+                        "--logfile",
+                        type = str,
+                        help = "log to LOGFILE. Example: -i log.txt")
+    # Verbose option
+    parser.add_argument("-v",
+                        "--verbose", action = "store_true",
+                        help = "turn on verbosity")
+
+    # Other options?
 
     # Returns all the arguments
     return parser.parse_args()
 
 
+# Do respective things based on arguments
+def argumentTreat(args):
+    # Set up interface (and other compulsory arguments)
+    iface = args.interface
+
+    if (args.verbose):
+        printVerboseDetails()
+    if (args.logfile):
+        global logfile
+        logfile = args.logfile
+
+
+
+
+
 def main():
-    args = argumentTreater()
+    args = argumentGenerator()
+    argumentTreat(args)
+
+
+
     # Iterate over all args and define variables/options
 '''
     if (verbose):
@@ -58,9 +88,8 @@ def main():
     '''
 
 def printVerboseDetails():
-    print W
-    print "probeJam.py"
-    print "Version:%s"
+    print W + "probeJam.py"
+    print "Version: %s" % VERSION
     print "Created by SteffnJ"
     print "Thanks for using probeJam."
 
@@ -108,13 +137,11 @@ def kill(signal, frame):
     exit(1)
 
 
-#def processArguments(parser):
-#    parser.something9)
-#TODO - TARGET parameter
+
 if (__name__ == "__main__"):
     # Make sure that we can kill the program
     signal(SIGINT, kill)
-
+    # Run the main program
     main()
 '''
 
