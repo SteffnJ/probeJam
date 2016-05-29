@@ -36,13 +36,18 @@ def argumentTreater():
 
     # Providing the interface is not optional!
     parser.add_argument("interface",
-                         help = "target interface, in monitoring mode"\
-                            + "\n\nExample: ")
+                        type=str,
+                        help = "target interface, in monitoring mode."\
+                            + "\n\nExample: probeJam.py wlan0mon")
     args = parser.parse_args()
+
+    # Returns all the arguments
+    return parser.parse_args()
 
 
 def main():
-    argumentTreater()
+    args = argumentTreater()
+    # Iterate over all args and define variables/options
 '''
     if (verbose):
         printVerboseDetails()
