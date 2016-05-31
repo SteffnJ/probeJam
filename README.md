@@ -12,9 +12,9 @@ Partly educational, partly lulz, partly because I haven't found a software that 
 
 ## Installation
 Dependencies:
-*Python2.7
-*Scapy
-*WiFi adapter that supports monitor mode*
+* Python2.7
+* Scapy
+* WiFi adapter that supports monitor mode*
 
 \*If you want to use the `setupAdapter.sh` script, you would need iwconfig and ifconfig installed as well.
 
@@ -30,9 +30,9 @@ Personally, I am using this program on a Kali 64-bit VM through VirtualBox - I a
 
 
 ## Visions for the future
-*Give in an SSID and jam everyone that has been connected to the SSID (based on probe requests)
-*Implement a feature that jams a target before sniffing up all the SSIDs
-*Other?
+* Give in an SSID and jam everyone that has been connected to the SSID (based on probe requests)
+* Implement a feature that jams a target before sniffing up all the SSIDs
+* Other?
 
 ## Licence
 MIT License
