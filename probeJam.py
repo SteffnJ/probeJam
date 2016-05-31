@@ -3,10 +3,13 @@
 # probeJam.py
 # who? Steffen 'SteffnJ' Johansen
 # when? 2016
-# what?
-#  
 
-#
+# what? probeJam.py can be run in two modes:
+# jamming (with the argument -j) or sniffing (without any arguments)
+# The jamming is a targeted jam - so you don't have to jam all clients
+# connected to an AP - like most jammers
+# The sniffing part logs all probe requests and responses
+# A logging option is also available
 
 import logging #This and next line is to get scapy to shut up
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
@@ -135,6 +138,10 @@ def printVerboseDetails():
 def jam(iface, targetMac, apMac, numPackets):
     card = iface
     packets = [] # Empty array to store packets in
+
+    # Print packet info
+    print "Deauthenticating %s from %s" % (targetMac, apMac)
+    print "Deauthenticating %s from %s" % (apMac, targetMac)
 
     deAuth1 = RadioTap()/Dot11(type = 0, subtype = 12,
         addr1 = targetMac.lower(),
