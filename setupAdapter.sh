@@ -2,7 +2,7 @@
 
 # Takes in arguments and setups the WiFi adapter respectively
 # Usage: ./setupAdapter.sh <interface> <channel>
-if [[ $# < 2 ]]
+if [[ $# < 1 ]]
 then
     echo "Usage: ./setupAdapter.sh <interface> [channel]";
     exit;
